@@ -627,12 +627,13 @@ protected:
 		this->rCut=rCut;
 		this->convergenceOrder=convergenceOrder;
 		auto & v_cl=create_vcluster();
+#ifdef DCPSE_VERBOSE
 		if(this->opt==LOAD){
 			if(v_cl.rank()==0)
 			{std::cout<<"Warning: Creating empty DC-PSE operator! Please use update or load to get kernels."<<std::endl;}
 			return;
 		}
-
+#endif
 		localEps.resize(particlesDomain.size_local());
 		localEpsInvPow.resize(particlesDomain.size_local());
 		kerOffsets.resize(particlesDomain.size_local());
@@ -708,7 +709,7 @@ protected:
 			++it;
 			++Counter;
 		}
-
+#ifdef DCPSE_VERBOSE
 		v_cl.sum(avgSpacingGlobal);
 		v_cl.sum(avgSpacingGlobal2);
 		v_cl.max(maxSpacingGlobal);
@@ -717,6 +718,7 @@ protected:
 		v_cl.execute();
 		if(v_cl.rank()==0)
 		{std::cout<<"DCPSE Operator Construction Complete. The global avg spacing in the support <h> is: "<<HOverEpsilon*avgSpacingGlobal/(T(Counter))<<" (c="<<HOverEpsilon<<"). Avg:"<<avgSpacingGlobal2/(T(Counter))<<" Range:["<<minSpacingGlobal<<","<<maxSpacingGlobal<<"]."<<std::endl;}
+#endif
 	}
 
 	T computeKernel(Point<dim, T> x, EMatrix<T, Eigen::Dynamic, 1> & a) const {
